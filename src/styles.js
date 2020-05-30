@@ -1,0 +1,36 @@
+import { makeStyles } from '@material-ui/core/styles';
+import { height } from '@material-ui/system';
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        flexGrow: 1,
+        width: '100%',
+        height:'auto',
+        overflowX: 'hidden',
+    },
+    paper: {
+        paddingBottom: theme.spacing(5),
+        margin: 'auto',
+        maxWidth: '70%',
+        boxShadow: 'none',
+        [theme.breakpoints.down("xs")]: {
+            padding: theme.spacing(1.5),
+        },
+    },
+    taskButton:{
+        margin: 0,
+    top: 'auto',
+    right: 20,
+    bottom: 20,
+    left: 'auto',
+    position: 'fixed',
+    },
+    selectEmpty: {
+        marginTop: theme.spacing(2),
+      },
+    display:{
+        display:'flex'
+    }
+}))
+
+export default useStyles

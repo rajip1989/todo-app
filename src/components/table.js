@@ -20,12 +20,42 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit'
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { useStateValue, useDispatch } from "../store/configureStore";
-import { de } from 'date-fns/locale';
 import * as Actions from "../actions/action";
 import { Button } from '@material-ui/core';
 import { styles } from '@material-ui/pickers/views/Calendar/Calendar';
+import EditModel from './editModel';
+import MODEL from './model';
+import TodoDescModel from './todoDescModel';
 
-
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+  },
+  paper: {
+    width: '100%',
+    marginBottom: theme.spacing(2),
+  },
+  table: {
+    minWidth: 750,
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+  },
+  todoCompleted:{
+    textDecorationLine: "line-through"
+  },
+  headerBG:{
+    backgroundColor: "grey"
+  }
+}));
 
 
 function descendingComparator(a, b, orderBy) {
@@ -70,7 +100,7 @@ function EnhancedTableHead(props) {
   };
 
   return (
-    <TableHead >
+    <TableHead className={classes.headerBG}>
       <TableRow>
         {headCells.map((headCell) => (
           <TableCell
@@ -107,74 +137,43 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-  },
-  paper: {
-    width: '100%',
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    minWidth: 750,
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
-  },
-  todoCompleted:{
-    backgroundColor: "green"
-  }
-}));
 
 export default function EnhancedTable(props) {
-  console.log("table started");
   const classes = useStyles();
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('priority');
   const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const [open, setOpen] = React.useState(false);
+  const [openTodo, setOpenTodo] = React.useState(false);
+
+    const handleClickOpen = (e) => {
+        setOpen(true);
+    };
+    const handleClose = (e) => {
+      setOpen(false);
+  };
+    const handleClickOpenTodoRow = (e) => {
+      setOpenTodo(true);
+  };
+  const handleClickCloseTodoRow = (e) => {
+    setOpenTodo(false);
+};
+    
 
    const todoDetailsArray = useStateValue();
    const dispatch=useDispatch();
+   const editTodo = useStateValue();
   let rows = props.addedTodos.map(i => (
     {rowId:i.rowId, summary:i.summary, priority:i.priority, createdOn: i.createdOn, dueDate:i.dueDate, actions:true}
   ));
-
-  const editIcon = (
-    <IconButton onClick={console.log("edited")}>
-      <EditIcon color="primary" />
-    </IconButton>
-  );
-  
-  // const deleteRow = (id, items) =>{
-  //   debugger;
-  //   //delete items[id-0];
-  //   items = items.splice(id-0, 0) ;
-  //   rows = items;
-  // }
-  
-  // const deleteIcon = (
-  //   <IconButton onClick={deleteRow ()}>
-  //     <DeleteIcon color="primary" />
-  //   </IconButton>
-  // );
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-
 
   return (
     <div className={classes.root}>
@@ -199,26 +198,34 @@ export default function EnhancedTable(props) {
                 // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const labelId = `enhanced-table-checkbox-${index}`;
-
                   return (
                     <TableRow
+                      // onClick = { (e) =>handleClickOpen(e)}
                       hover
                       tabIndex={-1}
                       key={row.rowId}
-                      className = {row.todoStateCompleted ? classes.todoCompleted : null}
+                      className = {todoDetailsArray.todoDetailsArray[row.rowId - 1].todoStateCompleted == true ? classes.todoCompleted : null}
                     >
                       <TableCell align="right">{row.summary}</TableCell>
                       <TableCell align="right">{row.priority}</TableCell>
                       <TableCell align="right">{row.createdOn}</TableCell>
                       <TableCell align="right">{row.dueDate}</TableCell>
                       <TableCell align="right" component="th" scope="row">
-                      <IconButton onClick ={ (e) => Actions.deleteTodo(dispatch, row.rowId, todoDetailsArray.todoDetailsArray)}>
-                        <DeleteIcon color="primary" />
-                      </IconButton>
-                        {editIcon}
+                        <IconButton onClick ={ (e) => { Actions.deleteTodo(dispatch, row.rowId, todoDetailsArray.todoDetailsArray);}}>
+                          <DeleteIcon color="primary" />
+                        </IconButton>
+                        <IconButton onClick={(e) => {Actions.editTodo(dispatch, row.rowId, todoDetailsArray.todoDetailsArray); handleClickOpen();}}>
+                          <EditIcon color="primary" />
+                        </IconButton>
+                        <MODEL open={open} eleType={(e) => e.target.nodeName}  isclose={handleClose} />
                         <Button  color="primary" 
-                          onClick ={ (e) => Actions.completeTodo(dispatch, row.rowId, todoDetailsArray.todoDetailsArray)} 
-                        > Done</Button>
+                          onClick ={ (e) => { todoDetailsArray.todoDetailsArray[row.rowId - 1].todoStateCompleted == true ? 
+                            Actions.reopenTodo(dispatch, row.rowId, todoDetailsArray.todoDetailsArray) 
+                            :
+                            Actions.completeTodo(dispatch, row.rowId, todoDetailsArray.todoDetailsArray) 
+                          } }
+                        > { todoDetailsArray.todoDetailsArray[row.rowId - 1].todoStateCompleted == true ? 're-open' : 'Done'}
+                        </Button>
                       </TableCell>
                       {/* <TableCell align="right">{row.actions}</TableCell> */}
                     </TableRow>
@@ -227,6 +234,7 @@ export default function EnhancedTable(props) {
             </TableBody>
           </Table>
         </TableContainer>
+        {/* <TodoDescModel openTodo={openTodo}  iscloseTodo={(e) => handleClickCloseTodoRow(e)}/> */}
       </Paper>
     </div>
   );

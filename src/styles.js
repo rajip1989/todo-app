@@ -7,6 +7,7 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         height:'auto',
         overflowX: 'hidden',
+        backgroundColor: theme.palette.background.paper,
     },
     paper: {
         paddingBottom: theme.spacing(5),
@@ -30,6 +31,11 @@ const useStyles = makeStyles(theme => ({
       },
     display:{
         display:'flex'
+    },
+    selectPadding:{
+        paddingTop:'40px',
+        marginLeft:'20px',
+        marginRight:'20px'
     }
 }))
 

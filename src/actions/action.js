@@ -36,3 +36,32 @@ export const completeTodo = (dispatch, value, items) => {
         items: items
     });
 }
+export const reopenTodo = (dispatch, value, items) => {
+    dispatch({
+        type: "TODO_DETAILS_REOPEN",
+        rowId: value,
+        items: items
+    });
+}
+export const editTodo = (dispatch, value, items) => {
+    dispatch({
+        type: "TODO_DETAILS_EDIT",
+        rowId: value,
+        items: items
+    });
+}
+
+export const editTodoUpdate = (dispatch, value) => {
+    dispatch({
+        type: "TODO_DETAILS_EDIT_UPDATE",
+        value: value,
+    });
+}
+
+export const editTodoDetailsChange = (dispatch, key, value) => {
+    dispatch({
+        type: "EDIT_TODO_DETAILS_ON_CHANGE",
+        value: value,
+        key:key
+    });
+}

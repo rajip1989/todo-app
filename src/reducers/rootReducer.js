@@ -1,14 +1,17 @@
-import {todoDetailsReducer, deleteTodoReducer, completeTodoReducer} from './todoDetailsReducer';
+import {todoDetailsReducer, deleteTodoReducer, completeTodoReducer, editTodoReducer, editTodoDetailsReducer} from './todoDetailsReducer';
 import todoDetailsArrayReducer from './todoDetailsReducer'
 import cancelReducer from './cancelReducer';
+import { act } from '@testing-library/react';
 
-const rootReducer = ({todoDetails, todoDetailsArray, deletedItems, completeTodo, cancelDetails}, action) => {
+const rootReducer = ({todoDetails, todoDetailsArray, deletedItems, completeTodo, editTodo, cancelDetails}, action) => {
   return{
     todoDetails : todoDetailsReducer({todoDetails}, action),
     todoDetailsArray : todoDetailsArrayReducer({todoDetailsArray}, action),
     cancelDetails : cancelReducer({cancelDetails}, action),
     deletedItems : deleteTodoReducer({deletedItems}, action),
     completeTodo : completeTodoReducer({completeTodo}, action),
+    editTodo:editTodoReducer({editTodo},action),
+    //editTodo:editTodoDetailsReducer({editTodo},action)
   }
 }
 
@@ -33,6 +36,12 @@ export const initialState = {
   completeTodo : {
     todoStateCompleted : false,
   },
+  editTodo:[
+    // summary:'',
+    // description:'',
+    // priority:'',
+    // dueDate:'',
+  ],
   cancelDetails: {
     summary:'',
     description:'',

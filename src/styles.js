@@ -36,7 +36,19 @@ const useStyles = makeStyles(theme => ({
         paddingTop:'40px',
         marginLeft:'20px',
         marginRight:'20px'
-    }
+    },
+    dateMargin:{
+        marginLeft:'60%'
+    },
+    selectLabelMargin:{
+        marginBottom:'-14px'
+    },
+    descLabel:{
+        marginBottom:'20px'
+    },
+
+
+
 }))
 
 export default useStyles

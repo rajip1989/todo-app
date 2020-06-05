@@ -1,8 +1,9 @@
-export const todoDetailsChange = (dispatch, key, value) => {
+export const todoDetailsChange = (dispatch, key, value, name) => {
     dispatch({
         type: "TODO_DETAILS_ON_CHANGE",
         value: value,
-        key:key
+        key:key,
+        name:name
     });
 }
 
@@ -51,10 +52,11 @@ export const editTodo = (dispatch, value, items) => {
     });
 }
 
-export const editTodoUpdate = (dispatch, value) => {
+export const editTodoUpdate = (dispatch, value, items) => {
     dispatch({
         type: "TODO_DETAILS_EDIT_UPDATE",
-        value: value,
+        rowId: value,
+        items:items
     });
 }
 
@@ -63,5 +65,12 @@ export const editTodoDetailsChange = (dispatch, key, value) => {
         type: "EDIT_TODO_DETAILS_ON_CHANGE",
         value: value,
         key:key
+    });
+}
+
+export const showProgressBar = (dispatch, value) => {
+    dispatch({
+        type: "SHOW_PROGRESS_BAR",
+        value: value,
     });
 }

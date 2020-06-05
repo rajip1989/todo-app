@@ -1,8 +1,28 @@
-import { act } from "react-dom/test-utils";
-
 export const todoDetailsReducer = (state, action) => {
     switch (action.type) {
         case "TODO_DETAILS_ON_CHANGE":
+            if (action.name == "summary") {
+                if (action.value.length < 10) {
+                    state.todoDetails.todoDetailsErrors['summary'] = "The summary at least should have 10 characters.";
+                }
+                else if (action.value.length > 400) {
+                    state.todoDetails.todoDetailsErrors['summary'] = "The summary should not exceed 400 characters.";
+                }
+                else {
+                    delete state.todoDetails.todoDetailsErrors['summary']
+                }
+            }
+            if (action.name == "description") {
+                if (action.value.length < 10) {
+                    state.todoDetails.todoDetailsErrors['description'] = "The description at least should have 10 characters.";
+                }
+                else if (action.value.length > 400) {
+                    state.todoDetails.todoDetailsErrors['description'] = "The description should not exceed 500 characters.";
+                }
+                else {
+                    delete state.todoDetails.todoDetailsErrors['description']
+                }
+            }
             return {
                 ...state.todoDetails,
                 [action.key]: action.value,
@@ -18,7 +38,7 @@ export const deleteTodoReducer = (state = [], action) => {
             const conf = window.confirm("Are sure to delete todo?");
             if (conf) {
                 return [
-                    action.items = action.items.splice(action.rowId - 1, 1),
+                    ...state.todoDetailsArray = action.items.splice(action.rowId, 1),
                 ]
             }
         default:
@@ -30,11 +50,11 @@ export const completeTodoReducer = (state = [], action) => {
     switch (action.type) {
         case "TODO_DETAILS_COMPLETE":
             return [
-                action.items[action.rowId - 1].todoStateCompleted = true,
+                action.items[action.rowId].todoStateCompleted = true,
             ]
         case "TODO_DETAILS_REOPEN":
             return [
-                action.items[action.rowId - 1].todoStateCompleted = false,
+                action.items[action.rowId].todoStateCompleted = false,
             ]
         default:
             return state.todoDetailsArray
@@ -45,16 +65,20 @@ export const editTodoReducer = (state, action) => {
     switch (action.type) {
         case "TODO_DETAILS_EDIT":
             let editTodo = action.items.filter(function (e) {
-                return e.rowId == action.rowId;
+                return e.rowId == action.rowId + 1;
             });
             if (editTodo.length > 0) {
-                return [
-                    ...state.editTodo, editTodo[0]
-                    // summary: editTodo[0].summary,
-                    // description: editTodo[0].description,
-                    // priority: editTodo[0].priority,
-                    // dueDate: editTodo[0].dueDate
-            ]
+                return {
+                    ...state.editTodo,
+                    summary: editTodo[0].summary,
+                    description: editTodo[0].description,
+                    priority: editTodo[0].priority,
+                    dueDate: editTodo[0].dueDate,
+                    rowId: editTodo[0].rowId,
+                    createdOn: editTodo[0].createdOn,
+                    currentStatus: editTodo[0].todoStateCompleted,
+                    isRowEdited: true,
+                }
             }
         case "EDIT_TODO_DETAILS_ON_CHANGE":
             return {
@@ -62,17 +86,18 @@ export const editTodoReducer = (state, action) => {
                 [action.key]: action.value,
             }
         case "TODO_DETAILS_EDIT_UPDATE":
-            // let upadteEditedTodo = action.items.filter(function (e) {
-            //     return e.rowId == action.rowId;
-            // });
-            return {...state.todoDetails }
-                // ...state.todoDetails[action.rowId].summary = state.editTodo[0].summary,
-                // ...state.todoDetails[action.rowId].description = state.editTodo[0].description,
-                // ...state.todoDetails[action.rowId].priority = state.editTodo[0].priority,
-                // ...state.todoDetails[action.rowId].dueDate = state.editTodo[0].dueDate,
-            
+            const confUpdate = window.confirm("Are sure to update todo?");
+            if (confUpdate) {
+                return [
+                    action.items[action.rowId - 1].summary = state.editTodo.summary,
+                    action.items[action.rowId - 1].description = state.editTodo.description,
+                    action.items[action.rowId - 1].priority = state.editTodo.priority,
+                    action.items[action.rowId - 1].dueDate = state.editTodo.dueDate
+                ]
+            }
+
         default:
-            return [state.editTodo ]
+            return [state.editTodo]
     }
 }
 
@@ -88,6 +113,18 @@ export const editTodoDetailsReducer = (state, action) => {
     }
 }
 
+export const showProgressBarReducer = (state, action) => {
+    switch (action.type) {
+        case "SHOW_PROGRESS_BAR":
+            return {
+                ...state.showProgressBar,
+                show: action.value
+            }
+        default:
+            return state.showProgressBar
+    }
+}
+
 const todoDetailsArrayReducer = (state = [], action) => {
     switch (action.type) {
         case "TODO_DETAILS_SUBMIT":
@@ -99,4 +136,4 @@ const todoDetailsArrayReducer = (state = [], action) => {
     }
 }
 
-export default todoDetailsArrayReducer;
+export default todoDetailsArrayReducer

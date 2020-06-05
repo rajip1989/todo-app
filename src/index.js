@@ -13,7 +13,7 @@ import Store from './store/configureStore'
 const middleware = [ thunk ];
 middleware.push(createLogger());
 
-// const store = createStore(rootReducer,applyMiddleware(...middleware));
+//const store = createStore(rootReducer,applyMiddleware(...middleware));
 
 ReactDOM.render(
   <Store>
